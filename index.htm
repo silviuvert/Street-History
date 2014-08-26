@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  
+	<title>Istoria străzilor din Timișoara</title>
+  
+	<link href="jquery-ui-1.10.2.autocomplete.css" rel="stylesheet">
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+    <![endif]-->    
+    <link rel="stylesheet" href="streets.css">
+    <!--[if lte IE 8]>   
+       <style type="text/css">
+
+       #loadingScreen { 
+           background:transparent;
+           filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#B3FFFFFF,endColorstr=#B3FFFFFF); 
+           zoom: 1; 
+        } 
+
+        </style>
+    <![endif]-->
+    
+
+<body>
+
+    <div id="alphaList">
+		<div id="filtering" style="display: none;">
+			<span id="filterCurrent">Alta California</span>
+			<br>
+			<span id="clearFilter">Show All</span>
+		</div>
+		<div id="alphaListInner" class="allStreets">
+		</div>
+	</div>
+	
+	<div id="map"></div>
+	
+    <div id="loadingScreen">
+        <div class="splash">
+            <div class="splashLoading">
+            </div>
+            <div class="splashStatus">
+                Se încarcă ...
+            </div>
+            <div class="splashTop">
+                Vechile denumiri ale străzilor din Timișoara
+            </div>
+            <div class="splashBottom">
+                <div>Apasă pe orice stradă îngroșată pentru a afla denumirile ei vechi.</div>
+                <div>Folosește opțiunile din dreapta jos pentru a căuta o stradă anume.</div>
+            </div>
+        </div>
+    </div>
+	
+    <div id="filterHolder" style="display: none;">
+        
+		<div id="filterBrowse">
+            <a href="#" id="browseBefore">&lt;&nbsp;Înapoi</a>
+			<span>Meniu</span>
+			<a href="#" id="browseAfter">Înainte&nbsp;&gt;</a>
+			<div class="clear"></div>
+        </div>  
+		
+        <div id="filterToggle"><a href="#">Arată filtrele</a></div>
+        <div id="filterContents">
+            
+			<div id="filterHide" class="hide"><a href="#">&times;</a></div>
+            <div id="filterSearch" class="filterRow">
+                <label for="search">Caută</label><input type="text" id="search" placeholder="Introdu numele străzii">
+            </div>
+			
+            <div id="filterThemes" class="filterRow" style="padding: 0">
+				<!--
+                <label for="themes">Categories</label>
+                <select id="themes">
+                    <option value="all" selected>All</option>
+                    <option>Alta California</option>
+                    <option>Pioneers/Gold Rush</option>
+                    <option>20th Century</option>
+                    <option>Explorers</option>
+                    <option>Military</option>
+                    <option>Politicians</option>
+                    <option>Mayors</option>
+                    <option>Business</option>
+                    <option>Authors</option>
+                    <option>Anza Expedition</option>
+                    <option>Civil War</option>
+                    <option>Mexican-Am. War</option>
+                </select>
+				-->
+            </div>
+			
+            <div id="filterNeighborhoods" class="filterRow" style="padding: 0">
+				<!--
+                <label for="neighborhoods">Jump to</label>
+                <select id="neighborhoods">
+                    <option value="" selected>Select...</a>
+                    <option value="37.74333363742671,-122.39537715911865,37.71845453701034,-122.363018989563,37.73223580816516,-122.38168716430664">Bayview</option>
+                    <option value="37.736749804883395,-122.42104053497314,37.747202214322385,-122.4068784713745,37.74214587587896,-122.41387367248535">Bernal Heights</option>
+                    <option value="37.753819048126225,-122.42653369903564,37.767763359972506,-122.44691848754883,37.76255575543295,-122.43505239486696">Castro</option>
+                    <option value="37.7963053733897,-122.41084814071655,37.79072672589345,-122.40261912345885,37.79333806013901,-122.40644931793214">Chinatown</option>
+                    <option value="37.76945956892196,-122.44709014892577,37.76087635200272,-122.45339870452881,37.764964530146536,-122.44977235794067">Cole Valley</option>
+                    <option value="37.74693074183926,-122.43425846099854,37.73607102596503,-122.4476909637451,37.74150108305695,-122.4412751197815">Diamond Heights</option>
+                    <option value="37.751070589003284,-122.37851142883301,37.76830615106939,-122.39507675170897,37.76012993823887,-122.38816738128662">Dogpatch</option>
+                    <option value="37.763556593889184,-122.43644714355469,37.77278402560022,-122.42657661437988,37.76944260702504,-122.43110418319704">Duboce Triangle</option>
+                    <option value="37.732507334543705,-122.40662097930908,37.719846358133886,-122.4321985244751,37.7258037359464,-122.41936683654784">Excelsior</option>
+                    <option value="37.802460048862656,-122.39340305328369,37.784350612981044,-122.41018295288085,37.79211718808339,-122.40441083908081">Financial District</option>
+                    <option value="37.74302821484915,-122.42387294769287,37.73101392714009,-122.44601726531982,37.73800552947614,-122.4326491355896">Glen Park</option>
+                    <option value="37.76603318676243,-122.45318412780762,37.77654930110635,-122.42151260375975,37.77124054644495,-122.43702650070192">Haight</option>
+                    <option value="37.773123247469364,-122.41951704025269,37.77785523025258,-122.43127584457397,37.77582000595998,-122.4230146408081">Hayes Valley</option>
+                    <option value="37.71375270399967,-122.44539499282835,37.72483633111071,-122.46704578399658,37.71852243133036,-122.4547290802002">Ingleside</option>
+                    <option value="37.77349638972787,-122.47313976287842,37.78662301418771,-122.45532989501953,37.78102667641841,-122.46421337127684">Inner Richmond</option>
+                    <option value="37.766643840752764,-122.4532699584961,37.7408902215181,-122.493953704834,37.758399586454864,-122.4641704559326">Inner Sunset</option>
+                    <option value="37.735154664553534,-122.50665664672852,37.70602882890109,-122.46880531311034,37.72473449828769,-122.4852418899536">Lakeshore</option>
+                    <option value="37.79601712532894,-122.4230146408081,37.80751226415453,-122.44863510131836,37.80108673597385,-122.43655443191528">Marina</option>
+                    <option value="37.7690524823224,-122.42876529693602,37.74967935472825,-122.40627765655516,37.75877280300828,-122.41576194763184">Mission</option>
+                    <option value="37.79754313169,-122.42258548736572,37.788590111046965,-122.40902423858641,37.79298197454004,-122.4160087108612">Nob Hill</option>
+                    <option value="37.74360512310431,-122.42468833923338,37.75514234388464,-122.44176864624022,37.74878012841437,-122.43374347686768">Noe Valley</option>
+                    <option value="37.79781441840957,-122.39782333374022,37.808732881779484,-122.41945266723631,37.80340948481954,-122.40683555603027">North Beach</option>
+                    <option value="37.773157169570695,-122.47026443481447,37.788963175233846,-122.51343727111815,37.77977168190479,-122.49236583709715">Outer Richmond</option>
+                    <option value="37.76426904691132,-122.51189231872559,37.740788410771515,-122.47009277343749,37.755278065188314,-122.4935245513916">Outer Sunset</option>
+                    <option value="37.79784832917947,-122.44837760925292,37.78608035756359,-122.42455959320068,37.79250295191995,-122.43452668190001">Pacific Heights</option>
+                    <option value="37.74974722042169,-122.40537643432617,37.76772943539666,-122.3892831802368,37.75753439538469,-122.39363908767702">Potrero Hill</option>
+                    <option value="37.78624993818666,-122.49090671539307,37.81361515051083,-122.44842052459715,37.797034466405485,-122.46768951416016">Presidio</option>
+                    <option value="37.79031975640008,-122.41014003753662,37.81059767530207,-122.42730617523192,37.80124780485665,-122.41782188415527">Russian Hill</option>
+                    <option value="37.79622059466506,-122.38391876220702,37.770409428939,-122.42138385772704,37.780382222437794,-122.40357398986815">SoMa</option>
+                    <option value="37.77722770873696,-122.40949630737303,37.79072672589345,-122.42421627044679,37.78256995126976,-122.41709232330322">Tenderloin</option>
+                    <option value="37.745471560181194,-122.43606090545656,37.76175846764949,-122.46562957763673,37.75549861177573,-122.44820594787598">Twin Peaks</option>
+                    <option value="37.72144182822783,-122.43374347686768,37.70480651555111,-122.39606380462646,37.71553502238708,-122.41333723068239">Visitacion Valley</option>
+                    <option value="37.77376776473303,-122.41958141326906,37.78638560240497,-122.46030807495116,37.77853362589888,-122.43788480758667">Western Addition</option>                    
+                </select>
+				-->
+            </div>
+        </div>
+		
+        <div id="filterAbout">                      
+            <div id="aboutToggle">
+                <strong>Realizat de</strong>&nbsp;<a href="#" id="aboutLink">Smart City</a> după <strong>o idee</strong> a lui <a href="http://veltman.tumblr.com/">Noah Veltman</a>
+            </div>
+            <div id="about">
+                <div id="aboutHide" class="hide"><a href="#">&times;</a></div>
+                <div><label>Web</label><a href="http://mysmartcity.ro/" target="_blank">http://mysmartcity.ro/</a></div>
+                <div><label>FB</label><a href="https://www.facebook.com/mysmartcity.ro" target="_blank">Smart City</a></div>
+            </div>
+        </div>    
+    </div>
+
+    
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>             
+		<script type="text/javascript" src="jquery-ui-1.10.2.autocomplete.min.js"></script>
+		<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+		<script type="text/javascript" src="leaflet.fullscreen.js"></script>
+		<script type="text/javascript" src="queue.min.js"></script>
+		<script type="text/javascript" src="streets.js"></script>
+
+	</body>
+</html>
